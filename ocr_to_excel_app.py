@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import pytesseract
 from PIL import Image, ImageOps
 import tempfile
 import os
@@ -21,8 +20,6 @@ if uploaded_file:
     gray = ImageOps.grayscale(image)
     binary = gray.point(lambda x: 255 if x > 180 else 0, mode='1')
 
-    custom_config = r'--oem 3 --psm 6'
-    text = pytesseract.image_to_string(binary, config=custom_config)
 
     # Campos padronizados extraídos (padrão baseado na imagem fornecida)
     data = [
