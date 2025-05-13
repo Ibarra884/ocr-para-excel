@@ -1,10 +1,9 @@
 import streamlit as st
 import pandas as pd
 import pytesseract
-from PIL import Image
+from PIL import Image, ImageOps
 import tempfile
 import os
-import cv2
 import numpy as np
 
 st.set_page_config(page_title="Conversor de Imagem para Excel", layout="centered")
@@ -18,14 +17,12 @@ if uploaded_file:
     image = Image.open(uploaded_file)
     st.image(image, caption="Imagem enviada", use_column_width=True)
 
-    # Convert to grayscale and threshold to improve OCR
-    image_cv = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
-    gray = cv2.cvtColor(image_cv, cv2.COLOR_BGR2GRAY)
-    _, thresh = cv2.threshold(gray, 180, 255, cv2.THRESH_BINARY)
+    # Converter imagem para escala de cinza e aplicar binarização
+    gray = ImageOps.grayscale(image)
+    binary = gray.point(lambda x: 255 if x > 180 else 0, mode='1')
 
-    processed_image = Image.fromarray(thresh)
     custom_config = r'--oem 3 --psm 6'
-    text = pytesseract.image_to_string(processed_image, config=custom_config)
+    text = pytesseract.image_to_string(binary, config=custom_config)
 
     # Campos padronizados extraídos (padrão baseado na imagem fornecida)
     data = [
